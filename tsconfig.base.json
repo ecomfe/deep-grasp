@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "NodeNext",
+        "target": "ES2022",
+        "allowJs": false,
+        "esModuleInterop": true,
+        "moduleResolution": "NodeNext",
+        "strict": true,
+        "noFallthroughCasesInSwitch": true,
+        "skipLibCheck": true,
+        "declaration": true,
+        "baseUrl": "."
+    }
+}

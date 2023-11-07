@@ -1,0 +1,34 @@
+{
+  "private": true,
+  "name": "deep-grasp",
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": "https://github.com/ecomfe/deep-grasp",
+  "author": "otakustay <otakustay@gmail.com>",
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@8.10.2",
+  "scripts": {
+    "lint": "lerna run --no-bail lint",
+    "test": "lerna run test",
+    "build": "lerna run build",
+    "build-clean": "lerna run clean && npm run build",
+    "release": "lerna version --conventional-commits --no-push --force-publish",
+    "release-beta": "npm run release -- --conventional-prerelease --preid=beta",
+    "ci": "pnpm install --frozen-lockfile && npm run build-clean && npm run lint && npm run test",
+    "preversion": "npm run ci",
+    "prepack": "pnpm install --frozen-lockfile && npm run build-clean && sh scripts/build-check.sh",
+    "deploy": "lerna publish from-package",
+    "deploy-next": "npm run deploy -- --dist-tag=next --pre-dist-tag=next",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^18.2.0",
+    "@commitlint/config-conventional": "^18.1.0",
+    "dprint": "^0.42.5",
+    "husky": "^8.0.3",
+    "lerna": "^7.4.2",
+    "typescript": "^5.2.2"
+  }
+}

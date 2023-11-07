@@ -1,0 +1,18 @@
+# Dependency
+node_modules
+
+# System
+.DS_Store
+
+# Log
+/*.log
+
+# IDE
+/.idea
+
+# Build
+*.tgz
+dist
+
+# Test
+/packages/*/coverage
