@@ -1,0 +1,23 @@
+{
+  "include": [
+    "src",
+    "*.ts"
+  ],
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ES2018",
+    "outDir": "dist",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "strict": true,
+    "noUnusedLocals": false,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}

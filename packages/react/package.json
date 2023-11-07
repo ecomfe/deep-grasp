@@ -1,0 +1,40 @@
+{
+  "name": "@deep-grasp/react",
+  "version": "0.8.0",
+  "license": "MIT",
+  "description": "React binding for deep-grasp",
+  "keywords": [
+    "llm",
+    "react",
+    "ai"
+  ],
+  "author": "otakustay <otakustay@gmail.com>",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint --max-warnings=0 src",
+    "test": "echo 'No test in @deep-grasp/react'"
+  },
+  "dependencies": {
+    "@deep-grasp/core": "0.8.0",
+    "@huse/intended-lazy": "^1.1.2",
+    "@types/react": "^18.2.36",
+    "react-suspense-boundary": "^2.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.53.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "react": "^18.2.0",
+    "typescript": "^5.2.2"
+  }
+}

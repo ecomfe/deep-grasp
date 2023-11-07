@@ -1,0 +1,47 @@
+{
+  "private": true,
+  "name": "@deep-grasp/world-clock",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "engines": {
+    "node": ">=14.18.0 || >= 16.10.0"
+  },
+  "license": "MIT",
+  "scripts": {
+    "start": "skr dev",
+    "build": "skr build --clean",
+    "analyze": "npm run build -- --analyze --build-target=stable",
+    "lint": "skr lint",
+    "lint-staged": "skr lint --staged --fix --auto-stage",
+    "test": "echo 'No test in @deep-grasp/world-clock'"
+  },
+  "dependencies": {
+    "@deep-grasp/core": "0.8.0",
+    "@deep-grasp/react": "0.8.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "antd": "^5.11.0",
+    "core-js": "^3.33.2",
+    "countries-and-timezones": "^3.5.2",
+    "jotai": "^2.5.1",
+    "react": "^18.2.0",
+    "react-clock": "^4.5.1",
+    "react-dom": "^18.2.0",
+    "react-suspense-boundary": "^2.3.1"
+  },
+  "devDependencies": {
+    "@reskript/cli": "6.0.3",
+    "@reskript/cli-build": "6.0.3",
+    "@reskript/cli-dev": "6.0.3",
+    "@reskript/cli-lint": "6.0.3",
+    "@reskript/config-lint": "6.0.3",
+    "@reskript/settings": "6.0.3",
+    "@types/react": "^18.2.36",
+    "@types/react-dom": "^18.2.14",
+    "eslint": "^8.53.0",
+    "stylelint": "^15.11.0",
+    "typescript": "^5.2.2",
+    "webpack": "^5.89.0"
+  }
+}
