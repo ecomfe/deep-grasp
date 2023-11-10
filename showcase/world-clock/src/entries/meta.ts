@@ -1,12 +1,12 @@
-import {ComponentType, lazy} from 'react';
-import {ComponentInfo} from '@deep-grasp/react';
+import {ComponentModuleInfo} from '@deep-grasp/core';
+import {ComponentType} from 'react';
 
 function named<N extends string>(name: N) {
-    return (module: Record<N, ComponentType<any>>) => ({default: module[name]});
+    return (module: Record<N, ComponentType<any>>) => module[name];
 }
 
 // TODO: These should be generated from a compiler
-export const components: ComponentInfo[] = [
+export const components: ComponentModuleInfo[] = [
     {
         definition: {
             name: 'clock',
@@ -22,7 +22,7 @@ export const components: ComponentInfo[] = [
                 required: ['timezone'],
             },
         },
-        component: lazy(() => import('@/components/Clock')),
+        load: () => import('@/components/Clock').then(named('default')),
     },
     {
         definition: {
@@ -38,7 +38,7 @@ export const components: ComponentInfo[] = [
                 },
             },
         },
-        component: lazy(() => import('@/components/AddClock').then(named('AddClockForm'))),
+        load: () => import('@/components/AddClock').then(named('AddClockForm')),
     },
     {
         definition: {
@@ -55,7 +55,7 @@ export const components: ComponentInfo[] = [
                 required: ['timezone'],
             },
         },
-        component: lazy(() => import('@/components/DeleteClock')),
+        load: () => import('@/components/DeleteClock').then(named('default')),
     },
 ];
 

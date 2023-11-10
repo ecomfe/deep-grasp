@@ -10,6 +10,13 @@ export interface ComponentDefinition {
     props: JSONSchema7;
 }
 
+export interface ComponentModuleInfo {
+    /** Definition of component */
+    definition: ComponentDefinition;
+    /** Async function to fetch corresponding module export */
+    load: () => Promise<unknown>;
+}
+
 export interface ServiceInput {
     /** User's natural language input */
     query: string;

@@ -3,6 +3,7 @@ export {
     ChatMesasge,
     ChatModelInput,
     ComponentDefinition,
+    ComponentModuleInfo,
     Service,
     ServiceFunctionOutput,
     ServiceInput,

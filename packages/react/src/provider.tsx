@@ -1,7 +1,7 @@
-import {ComponentType, ReactNode, createContext, useContext, useEffect, useRef, useState} from 'react';
-import {ComponentDefinition, ContextManager, Service} from '@deep-grasp/core';
+import {ComponentType, ReactNode, createContext, lazy, useContext, useEffect, useRef, useState} from 'react';
+import {ComponentDefinition, ComponentModuleInfo, ContextManager, Service} from '@deep-grasp/core';
 
-export interface ComponentInfo {
+export interface ComponentInfo extends ComponentModuleInfo {
     definition: ComponentDefinition;
     component: ComponentType<any>;
 }
@@ -27,19 +27,40 @@ interface GraspContextProviderProps {
     /** Function to call model as a service */
     service: Service;
     /** Graspable component info, usually generated automatically */
-    components: ComponentInfo[];
+    components: ComponentModuleInfo[];
     /** System instructions to provide initial context data */
     system: string[];
     /** Child component */
     children: ReactNode;
 }
 
-export function GraspProvider({service, components, system, children}: GraspContextProviderProps) {
-    const [contextValue] = useState(() => ({service, components, contextManager: new ContextManager(system)}));
+function createLazyComponent(info: ComponentModuleInfo) {
+    const loadComponent = async () => {
+        const component = await info.load() as ComponentType<any>;
+
+        if (typeof component !== 'function') {
+            throw new Error('Component must be a function or class');
+        }
+
+        return {default: component};
+    };
+    return lazy(loadComponent);
+}
+
+function compileToContextValue(props: GraspContextProviderProps): ContextValue {
+    return {
+        service: props.service,
+        contextManager: new ContextManager(props.system),
+        components: props.components.map(v => ({...v, component: createLazyComponent(v)})),
+    };
+}
+
+export function GraspProvider(props: GraspContextProviderProps) {
+    const [contextValue] = useState(() => compileToContextValue(props));
 
     return (
         <Context.Provider value={contextValue}>
-            {children}
+            {props.children}
         </Context.Provider>
     );
 }
