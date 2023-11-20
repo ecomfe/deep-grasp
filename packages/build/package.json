@@ -1,0 +1,53 @@
+{
+  "name": "@deep-grasp/build",
+  "version": "0.8.0",
+  "license": "MIT",
+  "description": "Build tools for deep-grasp",
+  "keywords": [
+    "llm",
+    "ai"
+  ],
+  "author": "otakustay <otakustay@gmail.com>",
+  "type": "module",
+  "engines": {
+    "node": ">=20.6.0"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "bin": {
+    "deep-grasp": "./bin/cli.mjs"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint --max-warnings=0 src",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@deep-grasp/core": "0.8.0",
+    "@deep-grasp/react": "0.8.0",
+    "@types/json-schema": "^7.0.14",
+    "@types/node": "^20.9.0",
+    "@types/react": "^18.2.36",
+    "@types/resolve": "^1.20.5",
+    "eslint": "^8.53.0",
+    "react": "^18.2.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "change-case": "^5.1.2",
+    "clipanion": "4.0.0-rc.2",
+    "globby": "^14.0.0",
+    "kolorist": "^1.8.0",
+    "p-map-series": "^3.0.0",
+    "prettier": "^3.1.0",
+    "resolve": "^1.22.8",
+    "tree-sitter": "^0.20.6",
+    "tree-sitter-typescript": "^0.20.3",
+    "ts-json-schema-generator": "^1.4.0",
+    "typanion": "^3.14.0",
+    "vitest": "^0.34.6"
+  }
+}

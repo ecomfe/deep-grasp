@@ -6,7 +6,7 @@
   "repository": "https://github.com/ecomfe/deep-grasp",
   "author": "otakustay <otakustay@gmail.com>",
   "engines": {
-    "node": ">=20"
+    "node": ">=20.6.0"
   },
   "packageManager": "pnpm@8.10.2",
   "scripts": {

@@ -1,4 +1,4 @@
-import {JSONSchema7} from 'json-schema';
+import {JSONSchema7Definition} from 'json-schema';
 import {ContextData} from './context.js';
 
 export interface ComponentDefinition {
@@ -7,7 +7,7 @@ export interface ComponentDefinition {
     /** Detailed description on the ability and behaveios of component  */
     description: string;
     /** A JSON schema object to describe component's props */
-    props: JSONSchema7;
+    props: JSONSchema7Definition;
 }
 
 export interface ComponentModuleInfo {
@@ -54,7 +54,7 @@ export interface ChatMesasge {
 export interface ChatFunction {
     name: string;
     description: string;
-    parameters: JSONSchema7;
+    parameters: JSONSchema7Definition;
 }
 
 export interface ChatModelInput {

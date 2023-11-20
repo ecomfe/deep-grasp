@@ -9,8 +9,8 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "skr dev",
-    "build": "skr build --clean",
+    "start": "deep-grasp generate && skr dev",
+    "build": "deep-grasp generate && skr build --clean",
     "analyze": "npm run build -- --analyze --build-target=stable",
     "lint": "skr lint",
     "lint-staged": "skr lint --staged --fix --auto-stage",
@@ -31,6 +31,7 @@
     "react-suspense-boundary": "^2.3.1"
   },
   "devDependencies": {
+    "@deep-grasp/build": "0.8.0",
     "@reskript/cli": "6.0.3",
     "@reskript/cli-build": "6.0.3",
     "@reskript/cli-dev": "6.0.3",

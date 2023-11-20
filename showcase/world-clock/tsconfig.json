@@ -10,7 +10,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "esModuleInterop": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "strict": true,
     "noUnusedLocals": false,
     "noFallthroughCasesInSwitch": true,
