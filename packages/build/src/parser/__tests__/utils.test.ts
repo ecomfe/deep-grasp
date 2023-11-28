@@ -2,7 +2,7 @@ import {describe, test, expect} from 'vitest';
 import Parser from 'tree-sitter';
 // @ts-expect-error No type definitions
 import TypeScript from 'tree-sitter-typescript';
-import {findNodesInTree, findNamedImport, resolveExportName} from '../utils.js';
+import {findNodesInTree, findNamedImport, resolveExportName, calculateFunctionNameFromComponent} from '../utils.js';
 
 const parser = new Parser();
 parser.setLanguage(TypeScript.tsx);
@@ -103,5 +103,37 @@ describe('resolveExportName', () => {
         const program = parser.parse(code).rootNode;
         const functionCallNode = program.firstNamedChild?.firstNamedChild?.firstNamedChild?.lastNamedChild!;
         expect(resolveExportName(functionCallNode)).toBe('result');
+    });
+});
+
+describe('calculateFunctionNameFromComponent', () => {
+    test('strip file extension', () => {
+        const result = calculateFunctionNameFromComponent('Bar', 'foo/Bar.tsx');
+        expect(result).toBe('foo_bar');
+    });
+
+    test('dedupe file and component name', () => {
+        const result = calculateFunctionNameFromComponent('Bar', 'foo/Bar');
+        expect(result).toBe('foo_bar');
+    });
+
+    test('strip index file name', () => {
+        const result = calculateFunctionNameFromComponent('Alice', 'foo/Bar/index');
+        expect(result).toBe('foo_bar_alice');
+    });
+
+    test('strip src prefix', () => {
+        const result = calculateFunctionNameFromComponent('Alice', 'src/foo/Bar');
+        expect(result).toBe('foo_bar_alice');
+    });
+
+    test('strip component like directory', () => {
+        const result = calculateFunctionNameFromComponent('Bob', 'modules/foo/pages/bar/components/Alice');
+        expect(result).toBe('foo_bar_alice_bob');
+    });
+
+    test('strip graspable keyword', () => {
+        const result = calculateFunctionNameFromComponent('GraspableAlice', 'foo/Bar');
+        expect(result).toBe('foo_bar_alice');
     });
 });

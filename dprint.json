@@ -68,7 +68,7 @@
     "tupleType.preferHanging": "never",
     "typeParameters.preferHanging": "never",
     "exportDeclaration.forceSingleLine": false,
-    "importDeclaration.forceSingleLine": true,
+    "importDeclaration.forceSingleLine": false,
     "exportDeclaration.forceMultiLine": false,
     "importDeclaration.forceMultiLine": false
   },

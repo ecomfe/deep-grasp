@@ -3,11 +3,16 @@ import fs from 'node:fs/promises';
 import Parser, {SyntaxNode} from 'tree-sitter';
 // @ts-expect-error No type definitions
 import TypeScript from 'tree-sitter-typescript';
-import {snakeCase} from 'change-case';
 import schemaGenerator, {Config} from 'ts-json-schema-generator';
 import {JSONSchema7Definition} from 'json-schema';
 import {ComponentDefinition} from '@deep-grasp/core';
-import {findNamedImport, findNodesInTree, resolveExportName} from './utils.js';
+import {
+    calculateFunctionNameFromComponent,
+    findNamedImport,
+    findNodesInTree,
+    resolveComponentName,
+    resolveExportName,
+} from './utils.js';
 import logger from '../logger.js';
 
 const parser = new Parser();
@@ -17,22 +22,6 @@ export interface ComponentResult {
     definition: ComponentDefinition;
     file: string;
     exportName: string;
-}
-
-function join(x: string, y: string) {
-    const xParts = snakeCase(x).split('_');
-    const yParts = snakeCase(y).split('_');
-    if (xParts.at(-1) === yParts.at(0)) {
-        yParts.unshift();
-    }
-    return xParts.concat(yParts).join('_');
-}
-
-function calculateFunctionName(file: string, componentName: string) {
-    return join(
-        path.relative(process.cwd(), file.replace(/\.tsx?$/, '')).replace(/^src\//, ''),
-        componentName.replace(/^Graspable/, '')
-    );
 }
 
 function extractInfoFromCallNode(node: SyntaxNode) {
@@ -140,7 +129,7 @@ export async function collectGraspableFromFile(file: string) {
         v => v.type === 'call_expression' && v.firstNamedChild?.text === graspableCalleeName
     );
     const collectForNode = (node: SyntaxNode): ComponentResult | ComponentResult[] => {
-        const componentName = node.lastNamedChild?.namedChild(0)?.text;
+        const componentName = resolveComponentName(node.lastNamedChild?.namedChild(0)?.text, file);
 
         if (!componentName) {
             logger.warn('  Cannot resolve component name from graspable call');
@@ -161,7 +150,7 @@ export async function collectGraspableFromFile(file: string) {
             file,
             exportName: info.exportName,
             definition: {
-                name: calculateFunctionName(file, componentName),
+                name: calculateFunctionNameFromComponent(componentName, path.relative(process.cwd(), file)),
                 description: info.description,
                 props: propSchema,
             },

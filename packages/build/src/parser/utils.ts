@@ -1,3 +1,5 @@
+import path from 'node:path';
+import {snakeCase} from 'change-case';
 import {SyntaxNode} from 'tree-sitter';
 
 export function findNodesInTree(root: SyntaxNode, match: (node: SyntaxNode) => boolean) {
@@ -70,4 +72,50 @@ export function resolveExportName(node: SyntaxNode) {
     }
 
     return 'default';
+}
+
+export function resolveComponentName(functionName: string | undefined, filename: string | undefined) {
+    if (functionName) {
+        return functionName;
+    }
+
+    if (!filename) {
+        return '';
+    }
+
+    const file = path.basename(filename, path.extname(filename));
+    return file === 'index' ? path.dirname(filename).split(path.sep).pop() : file;
+}
+
+function join(x: string, y: string) {
+    const xParts = snakeCase(x).split('_');
+    const yParts = snakeCase(y).split('_');
+    const dedupe = yParts.at(0);
+    while (xParts.length && xParts.at(-1) === dedupe) {
+        xParts.pop();
+    }
+    return xParts.concat(yParts).join('_');
+}
+
+function stripUnwantedFromFilePath(file: string) {
+    const strip = [
+        // 去掉文件名和后缀
+        /\.tsx?$/,
+        // 文件是`index.tsx`时不要这部分
+        /\/index$/,
+        // 相对路径的前面部分去掉
+        /^(\.\.\/)+/,
+        // 去掉`src/`目录
+        /^src\//,
+        // 去掉几个和组件有关的目录，这些目录出现在中间也要去掉
+        /(component|page|module)s?\//g,
+    ];
+    return strip.reduce((result, v) => result.replace(v, ''), file);
+}
+
+export function calculateFunctionNameFromComponent(componentName: string, file: string) {
+    return join(
+        stripUnwantedFromFilePath(file),
+        componentName.replace(/^Graspable/, '')
+    );
 }
