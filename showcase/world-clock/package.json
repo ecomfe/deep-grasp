@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@deep-grasp/world-clock",
-  "version": "1.0.0",
+  "version": "0.8.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "engines": {
