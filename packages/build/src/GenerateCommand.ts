@@ -7,7 +7,7 @@ import {isEnum} from 'typanion';
 import {globby} from 'globby';
 import prettier, {Config} from 'prettier';
 import {ComponentResult, collectGraspableFromFile} from './parser/react.js';
-import logger from './logger.js';
+import logger, {LOG_LEVELS, LogLevel} from './logger.js';
 import {ExitError, ExitCode} from './error.js';
 
 const PRETTIER_CONFIG: Config = {
@@ -73,12 +73,25 @@ export default class GenerateCommand extends Command {
         }
     );
 
+    logLevel = Option.String<LogLevel>(
+        '--log-level',
+        'info',
+        {
+            validator: isEnum(LOG_LEVELS),
+            description: `specify log level, can be ${LOG_LEVELS.map(v => '"' + v + '"').join(', ')}`,
+        }
+    );
+
     async execute(): Promise<number | void> {
+        logger.setLevel(this.logLevel);
+
         const files = await globby(
             this.includes ?? 'src/**/*.tsx',
             {ignore: this.excludes, cwd: this.cwd, absolute: true}
         );
+
         logger.info(`Found ${files.length} files to analyze`);
+
         try {
             const components = await pMapSeries(files, v => collectGraspableFromFile(v, this.cwd));
             const result: GenerateResult = {

@@ -19,6 +19,9 @@
   "bin": {
     "deep-grasp": "./bin/cli.mjs"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "rm -rf dist",
     "build": "tsc -p tsconfig.build.json",
