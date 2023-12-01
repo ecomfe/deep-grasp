@@ -91,6 +91,25 @@ As a basic example, add these to your existing code works:
 1. Wrap your component with `graspable` and export (either named ot default) it.
 2. Once a component has props, define props in a TypeScript interface, add jsdoc comment to each property.
 
+### Customizing component definition
+
+By default `graspable` use a string value for its 2nd parameter and make it the detailed description of component, however you can also pass a definition object to customize the component.
+
+A definition object is shaped like this:
+
+```ts
+interface GraspableComponentDescription {
+    name?: string;
+    props?: JSONSchema7Definition;
+    description: string;
+}
+```
+
+You must provide a `description` field, also you can provide a `name` and `props` to override automatic calculation of these fields.
+
+> [!IMPORTANT]
+> A description object must be a static JSON object, you can't use variables and function calls inside it.
+
 ### Customizing render when used by LLM
 
 `graspable` is actually a "meta" HoC, it didn't change the visual or behavior of your component, it's major responsibility is to tell our code analyzer to collect infomation about this component, however it can have limited cusomization when component is rendered by LLM response.

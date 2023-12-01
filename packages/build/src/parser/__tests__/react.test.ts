@@ -8,7 +8,7 @@ const currentDirectory = path.dirname(url.fileURLToPath(import.meta.url));
 describe('collectGraspableFromFile', () => {
     test('simple', async () => {
         const file = path.join(currentDirectory, 'fixtures', 'simple.tsx');
-        const result = await collectGraspableFromFile(file);
+        const result = await collectGraspableFromFile(file, process.cwd());
         const expected = [
             {
                 file,
@@ -34,7 +34,7 @@ describe('collectGraspableFromFile', () => {
 
     test('props', async () => {
         const file = path.join(currentDirectory, 'fixtures', 'props.tsx');
-        const result = await collectGraspableFromFile(file);
+        const result = await collectGraspableFromFile(file, process.cwd());
         const expected = [
             {
                 file,
@@ -71,6 +71,26 @@ describe('collectGraspableFromFile', () => {
                         },
                         required: ['message'],
                         additionalProperties: false,
+                    },
+                },
+            },
+        ];
+        expect(result).toEqual(expected);
+    });
+
+    test.only('custom description', async () => {
+        const file = path.join(currentDirectory, 'fixtures', 'description.tsx');
+        const result = await collectGraspableFromFile(file, process.cwd());
+        const expected = [
+            {
+                file,
+                exportName: 'default',
+                definition: {
+                    name: 'custom_name',
+                    description: 'A custom function',
+                    props: {
+                        type: 'object',
+                        properties: {},
                     },
                 },
             },

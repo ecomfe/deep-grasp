@@ -1,6 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import Parser, {SyntaxNode} from 'tree-sitter';
+import JSON5 from 'json5';
 // @ts-expect-error No type definitions
 import TypeScript from 'tree-sitter-typescript';
 import schemaGenerator, {Config} from 'ts-json-schema-generator';
@@ -14,6 +15,7 @@ import {
     resolveExportName,
 } from './utils.js';
 import logger from '../logger.js';
+import {ExitCode, ExitError} from '../error.js';
 
 const parser = new Parser();
 parser.setLanguage(TypeScript.tsx);
@@ -41,20 +43,21 @@ function extractInfoFromCallNode(node: SyntaxNode) {
     // `options` is currently irrelevant to code generation
     const descriptionNode = argumentsNode.namedChild(1);
 
-    if (descriptionNode?.type !== 'string') {
-        throw new Error('Expect string literal as description argument to graspable function call');
+    if (descriptionNode?.type === 'string') {
+        return {description: descriptionNode.firstNamedChild?.text, exportName};
     }
 
-    const description = descriptionNode.firstNamedChild?.text;
-
-    if (!description) {
-        throw new Error('Expect detailed description in graspable function call');
+    if (descriptionNode?.type === 'object') {
+        try {
+            const info = JSON5.parse<Partial<ComponentDefinition>>(descriptionNode.text);
+            return {...info, exportName};
+        }
+        catch (ex) {
+            throw new Error('Unable to statically parse description object in graspable function call');
+        }
     }
 
-    return {
-        description,
-        exportName,
-    };
+    throw new Error('Expect detailed description in graspable function call');
 }
 
 function findComponentNode(program: SyntaxNode, identifier: string) {
@@ -92,7 +95,7 @@ function resolveComponentPropSchema(file: string, componentNode: SyntaxNode) {
 
     if (!typeName) {
         logger.error('    No type annotation for props parameter');
-        process.exit(2);
+        throw new ExitError(ExitCode.ParseError);
     }
 
     const config: Config = {
@@ -109,12 +112,13 @@ function resolveComponentPropSchema(file: string, componentNode: SyntaxNode) {
     }
     catch (ex) {
         logger.error(`    Failed to generate schema for props: ${ex instanceof Error ? ex.message : ex}`);
-        process.exit(2);
+        throw new ExitError(ExitCode.ParseError);
     }
 }
 
-export async function collectGraspableFromFile(file: string) {
-    logger.verbose(`Start analyze ${file}`);
+export async function collectGraspableFromFile(file: string, cwd: string) {
+    const relativeFilePath = path.relative(cwd, file);
+    logger.verbose(`Start analyze ${relativeFilePath}`);
     const source = await fs.readFile(file, 'utf-8');
     const program = parser.parse(source).rootNode;
     const graspableCalleeName = findNamedImport(program, '@deep-grasp/react', 'graspable');
@@ -146,13 +150,19 @@ export async function collectGraspableFromFile(file: string) {
         logger.verbose(`  Generate definition for component ${componentName}`);
         const propSchema = resolveComponentPropSchema(file, componentNode);
         const info = extractInfoFromCallNode(node);
+
+        if (!info.description) {
+            logger.error('  Expect detailed description of component in graspable function call');
+            throw new ExitError(ExitCode.ParseError);
+        }
+
         return {
             file,
             exportName: info.exportName,
             definition: {
-                name: calculateFunctionNameFromComponent(componentName, path.relative(process.cwd(), file)),
+                name: info.name ?? calculateFunctionNameFromComponent(componentName, relativeFilePath),
                 description: info.description,
-                props: propSchema,
+                props: info.props ?? propSchema,
             },
         };
     };

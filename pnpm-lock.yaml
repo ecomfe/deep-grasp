@@ -59,6 +59,9 @@ importers:
       globby:
         specifier: ^14.0.0
         version: 14.0.0
+      json5:
+        specifier: ^2.2.3
+        version: 2.2.3
       kolorist:
         specifier: ^1.8.0
         version: 1.8.0
@@ -136,6 +139,9 @@ importers:
       '@huse/intended-lazy':
         specifier: ^1.1.2
         version: 1.1.2(react@18.2.0)
+      '@types/json-schema':
+        specifier: ^7.0.14
+        version: 7.0.14
       '@types/react':
         specifier: ^18.2.36
         version: 18.2.36

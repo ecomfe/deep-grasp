@@ -8,6 +8,7 @@ import {globby} from 'globby';
 import prettier, {Config} from 'prettier';
 import {ComponentResult, collectGraspableFromFile} from './parser/react.js';
 import logger from './logger.js';
+import {ExitError, ExitCode} from './error.js';
 
 const PRETTIER_CONFIG: Config = {
     parser: 'typescript',
@@ -78,13 +79,23 @@ export default class GenerateCommand extends Command {
             {ignore: this.excludes, cwd: this.cwd, absolute: true}
         );
         logger.info(`Found ${files.length} files to analyze`);
-        const components = await pMapSeries(files, collectGraspableFromFile);
-        const result: GenerateResult = {
-            components: components.flat(),
-        };
-        logger.verbose(`Format to ${this.format} code`);
-        const code = await this.serialize(result);
-        await this.writeToDisk(code);
+        try {
+            const components = await pMapSeries(files, v => collectGraspableFromFile(v, this.cwd));
+            const result: GenerateResult = {
+                components: components.flat(),
+            };
+            logger.verbose(`Format to ${this.format} code`);
+            const code = await this.serialize(result);
+            await this.writeToDisk(code);
+        }
+        catch (ex) {
+            if (ex instanceof ExitError) {
+                process.exit(ex.code);
+            }
+
+            logger.error(`Unknown error: ${ex instanceof Error ? ex.message : ex}`);
+            process.exit(ExitCode.Unknown);
+        }
     }
 
     private async serialize(result: GenerateResult) {
@@ -117,19 +128,20 @@ export default class GenerateCommand extends Command {
         if (this.output) {
             await fs.writeFile(this.output, content);
             logger.info(`Generated content writes to ${this.output}`);
+            return;
         }
-        else {
-            try {
-                const destination = path.join(
-                    path.dirname(resolve.sync('@deep-grasp/core', {basedir: this.cwd})),
-                    `generated.${this.format === 'json' ? 'json' : 'js'}`
-                );
-                await fs.writeFile(destination, content);
-                logger.info('Content generated successfully, use "import @deep-grasp/generated" to reference them');
-            }
-            catch {
-                logger.error('Unable to resolve @deep-grasp from ');
-            }
+
+        try {
+            const destination = path.join(
+                path.dirname(resolve.sync('@deep-grasp/core', {basedir: this.cwd})),
+                `generated.${this.format === 'json' ? 'json' : 'js'}`
+            );
+            await fs.writeFile(destination, content);
+            logger.info('Content generated successfully, use "import @deep-grasp/generated" to reference them');
+        }
+        catch {
+            logger.error(`Unable to resolve @deep-grasp/core from ${this.cwd}`);
+            process.exit(ExitCode.WriteError);
         }
     }
 }

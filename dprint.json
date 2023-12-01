@@ -12,6 +12,7 @@
     "singleBodyPosition": "nextLine",
     "nextControlFlowPosition": "nextLine",
     "trailingCommas": "onlyMultiLine",
+    "parameters.trailingCommas": "never",
     "arguments.trailingCommas": "never",
     "operatorPosition": "nextLine",
     "preferHanging": false,

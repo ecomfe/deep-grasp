@@ -27,6 +27,7 @@
   "dependencies": {
     "@deep-grasp/core": "0.8.0",
     "@huse/intended-lazy": "^1.1.2",
+    "@types/json-schema": "^7.0.14",
     "@types/react": "^18.2.36",
     "react-suspense-boundary": "^2.3.1"
   },
